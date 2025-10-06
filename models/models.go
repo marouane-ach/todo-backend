@@ -54,6 +54,7 @@ type Todo struct {
 	bun.BaseModel `bun:"table:todos"`
 
 	Text       string    `bun:",unique"`
+	Completed  bool      `bun:"default:false"`
 	TodoListID int       `bun:",notnull"`
 	TodoList   *TodoList `bun:"rel:belongs-to,join:todo_list_id=id"`
 }

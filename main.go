@@ -20,9 +20,11 @@ func main() {
 
 	e.POST("/todolists", controllers.CreateTodoList)
 
+	e.GET("/todolists", controllers.GetUserTodoLists)
+
 	e.POST("/todolists/:id/todos", controllers.CreateTodo)
 
-	e.GET("/todolists", controllers.GetUserTodoLists)
+	e.GET("/todolists/:id", controllers.GetTodoListByID)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }

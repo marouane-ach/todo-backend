@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/marouane-ach/todo-go/db"
@@ -63,4 +64,36 @@ func GetUserTodoLists(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, todoLists)
+}
+
+func GetTodoListByID(c echo.Context) error {
+	ctx := context.Background()
+	db := db.GetDBIntance()
+
+	user, err := utils.ValidateToken(c, db, ctx)
+	if err != nil {
+		return err
+	}
+
+	todoListID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, &dtos.ErrorDTO{ErrorCode: 13, Description: "Todo list does not exist."})
+	}
+
+	todoList := new(models.TodoList)
+	err = db.NewSelect().
+		Model(todoList).
+		Where("id = ?", todoListID).
+		Relation("Todos").
+		Order("created_at DESC").
+		Scan(ctx)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, &dtos.ErrorDTO{ErrorCode: 13, Description: "Todo list does not exist."})
+	}
+
+	if todoList.OwnerID != user.ID {
+		return c.JSON(http.StatusUnauthorized, &dtos.ErrorDTO{ErrorCode: 14, Description: "Unauthorized."})
+	}
+
+	return c.JSON(http.StatusOK, todoList)
 }

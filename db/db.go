@@ -24,7 +24,7 @@ func GetDBIntance() *bun.DB {
 	return dbInstance
 }
 
-func GetDBContext() context.Context {
+func GetAppContext() context.Context {
 	if dbContext == nil {
 		dbContext = context.Background()
 	}
@@ -33,7 +33,7 @@ func GetDBContext() context.Context {
 }
 
 func CreateDBTables() {
-	ctx := GetDBContext()
+	ctx := GetAppContext()
 	db := GetDBIntance()
 
 	_, err := db.NewCreateTable().Model((*models.User)(nil)).IfNotExists().Exec(ctx)
@@ -63,7 +63,7 @@ func CreateDBTables() {
 }
 
 func SeedColorsTable() {
-	ctx := GetDBContext()
+	ctx := GetAppContext()
 	db := GetDBIntance()
 
 	colors := [8]models.Color{
