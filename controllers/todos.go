@@ -16,7 +16,7 @@ import (
 // Create Todo godoc
 // @Summary      Create a new todo in this todo list
 // @Description  Accepts `text` as a JSON object and returns the created todo.
-// @Tags         Todo Lists
+// @Tags         Todos
 // @Param        todo body dtos.TodoDTO true "The todo list's name and color ID"
 // @Param        id path int true "Todo List ID"
 // @Accept       json
@@ -68,7 +68,7 @@ func CreateTodo(c echo.Context) error {
 // Update todo godoc
 // @Summary      Update this todo
 // @Description  Accepts `text` and `completed` as a JSON object and returns the updated todo.
-// @Tags         Todo Lists
+// @Tags         Todos
 // @Param        todo body dtos.TodoDTO true "The todo's text and completed status"
 // @Param        id path int true "Todo ID"
 // @Accept       json
@@ -104,10 +104,6 @@ func UpdateTodo(c echo.Context) error {
 		fmt.Println(err)
 		return c.JSON(http.StatusNotFound, &dtos.ErrorDTO{ErrorCode: 17, Description: "Todo does not exist."})
 	}
-
-	fmt.Println(user)
-	fmt.Println(todo)
-	fmt.Println(todoDTO)
 
 	if todo.TodoList.OwnerID != user.ID {
 		return c.JSON(http.StatusUnauthorized, &dtos.ErrorDTO{ErrorCode: 18, Description: "Unauthorized."})
