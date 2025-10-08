@@ -1,4 +1,4 @@
-Backend application for a Todo App in Go.
+Backend application for a Todo App, written in Go with Echo and Bun ORM.
 
 # Running the app
 
