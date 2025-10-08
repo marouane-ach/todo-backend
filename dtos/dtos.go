@@ -16,5 +16,6 @@ type TodoListDTO struct {
 }
 
 type TodoDTO struct {
-	Text string `json:"text"`
+	Text      string `json:"text"`
+	Completed bool   `json:"completed"`
 }

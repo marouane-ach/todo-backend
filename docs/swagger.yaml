@@ -1,0 +1,387 @@
+basePath: /
+definitions:
+  dtos.ErrorDTO:
+    properties:
+      description:
+        type: string
+      error_code:
+        type: integer
+    type: object
+  dtos.TodoDTO:
+    properties:
+      completed:
+        type: boolean
+      text:
+        type: string
+    type: object
+  dtos.TodoListDTO:
+    properties:
+      color_id:
+        type: integer
+      name:
+        type: string
+    type: object
+  dtos.UserDTO:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  models.Color:
+    properties:
+      colorHex:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.Todo:
+    properties:
+      completed:
+        type: boolean
+      createdAt:
+        type: string
+      id:
+        type: integer
+      text:
+        type: string
+      todoList:
+        $ref: '#/definitions/models.TodoList'
+      todoListID:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  models.TodoList:
+    properties:
+      color:
+        $ref: '#/definitions/models.Color'
+      colorID:
+        type: integer
+      createdAt:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      owner:
+        $ref: '#/definitions/models.User'
+      ownerID:
+        type: integer
+      todos:
+        items:
+          $ref: '#/definitions/models.Todo'
+        type: array
+      updatedAt:
+        type: string
+    type: object
+  models.User:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      hashedPassword:
+        type: string
+      id:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+host: localhost:1323
+info:
+  contact: {}
+  description: Backend for a Todo App.
+  title: Todo App Backend
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Accepts `email` and `password` as JSON and returns a Bearer token as a JSON string.
+        The token must be placed in the Authorization header in subsequent authenticated requests.
+      parameters:
+      - description: the user's email ans password
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.UserDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+      summary: Log in to an account
+      tags:
+      - Accounts
+  /logout:
+    post:
+      consumes:
+      - application/json
+      description: Deletes the token associated with the current account
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Log out of an account
+      tags:
+      - Accounts
+  /signup:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Accepts `email` and `password` as JSON and returns a Bearer token as a JSON string.
+        The token must be placed in the Authorization header in subsequent authenticated requests.
+      parameters:
+      - description: the user's email ans password
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.UserDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+      summary: Create a new account
+      tags:
+      - Accounts
+  /todolists:
+    get:
+      consumes:
+      - application/json
+      description: Returns a JSON array of the user's todo lists along with their
+        associated todos.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.TodoList'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Get user's todo lists.
+      tags:
+      - Todo Lists
+    post:
+      consumes:
+      - application/json
+      description: Accepts `name` and `color_id` as JSON and returns the created todo
+        list.
+      parameters:
+      - description: The todo list's name and color ID
+        in: body
+        name: todo_list
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.TodoListDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.TodoList'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Create a new todo list
+      tags:
+      - Todo Lists
+  /todolists/{id}/todos:
+    post:
+      consumes:
+      - application/json
+      description: Accepts `text` as a JSON object and returns the created todo.
+      parameters:
+      - description: The todo list's name and color ID
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.TodoDTO'
+      - description: Todo List ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Todo'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Create a new todo in this todo list
+      tags:
+      - Todo Lists
+  /todolists{id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns a JSON objecy of a todo list along with its associated
+        todos.
+      parameters:
+      - description: Todo List ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.TodoList'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Get a single todo list by ID
+      tags:
+      - Todo Lists
+  /todos/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Accepts `text` and `completed` as a JSON object and returns the
+        updated todo.
+      parameters:
+      - description: The todo's text and completed status
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.TodoDTO'
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Todo'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dtos.ErrorDTO'
+      security:
+      - BearerAuth: []
+      summary: Update this todo
+      tags:
+      - Todo Lists
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

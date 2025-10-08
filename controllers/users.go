@@ -16,6 +16,19 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Signup godoc
+// @Summary      Create a new account
+// @Description  Accepts `email` and `password` as JSON and returns a Bearer token as a JSON string.
+// @Description  The token must be placed in the Authorization header in subsequent authenticated requests.
+// @Tags         Accounts
+// @Param        user body dtos.UserDTO true "the user's email ans password"
+// @Accept       json
+// @Produce      json
+// @Success      201  {string}	string
+// @Failure      400  {object}  dtos.ErrorDTO
+// @Failure      409  {object}  dtos.ErrorDTO
+// @Failure      500  {object}  dtos.ErrorDTO
+// @Router       /signup [post]
 func Signup(c echo.Context) error {
 	ctx := context.Background()
 	db := db.GetDBIntance()
@@ -54,6 +67,19 @@ func Signup(c echo.Context) error {
 	return c.JSON(http.StatusCreated, token.Token)
 }
 
+// Login godoc
+// @Summary      Log in to an account
+// @Description  Accepts `email` and `password` as JSON and returns a Bearer token as a JSON string.
+// @Description  The token must be placed in the Authorization header in subsequent authenticated requests.
+// @Tags         Accounts
+// @Param        user body dtos.UserDTO true "the user's email ans password"
+// @Accept       json
+// @Produce      json
+// @Success      200  {string}	string
+// @Failure      401  {object}  dtos.ErrorDTO
+// @Failure      404  {object}  dtos.ErrorDTO
+// @Failure      500  {object}  dtos.ErrorDTO
+// @Router       /login [post]
 func Login(c echo.Context) error {
 	ctx := context.Background()
 	db := db.GetDBIntance()
@@ -86,6 +112,17 @@ func Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, t)
 }
 
+// Logout godoc
+// @Summary      Log out of an account
+// @Description  Deletes the token associated with the current account
+// @Tags         Accounts
+// @Accept       json
+// @Produce      json
+// @Success      201  {string}	string
+// @Failure      401  {object}  dtos.ErrorDTO
+// @Failure      500  {object}  dtos.ErrorDTO
+// @Security	 BearerAuth
+// @Router       /logout [post]
 func Logout(c echo.Context) error {
 	ctx := context.Background()
 	db := db.GetDBIntance()

@@ -6,8 +6,8 @@ import (
 
 	"github.com/marouane-ach/todo-go/models"
 	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/pgdialect"
-	"github.com/uptrace/bun/driver/pgdriver"
+	"github.com/uptrace/bun/dialect/sqlitedialect"
+	"github.com/uptrace/bun/driver/sqliteshim"
 )
 
 var dbInstance *bun.DB
@@ -15,10 +15,11 @@ var dbContext context.Context
 
 func GetDBIntance() *bun.DB {
 	if dbInstance == nil {
-		sqldb := sql.OpenDB(pgdriver.NewConnector(
-			pgdriver.WithDSN("postgres://todoapp:todoapp@localhost:5432/todoapp?sslmode=disable"),
-		))
-		dbInstance = bun.NewDB(sqldb, pgdialect.New())
+		sqldb, err := sql.Open(sqliteshim.ShimName, "file:dev.db?cache=shared&mode=rwc")
+		if err != nil {
+			panic(err)
+		}
+		dbInstance = bun.NewDB(sqldb, sqlitedialect.New())
 	}
 
 	return dbInstance
