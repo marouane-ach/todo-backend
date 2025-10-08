@@ -42,12 +42,9 @@ func Signup(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, &dtos.ErrorDTO{ErrorCode: 1, Description: "Invalid email address."})
 	}
 
-	if utf8.RuneCountInString(userDTO.Password) < 8 {
-		return c.JSON(http.StatusBadRequest, &dtos.ErrorDTO{ErrorCode: 2, Description: "Password must contain 8-24 characters."})
-	}
-
-	if utf8.RuneCountInString(userDTO.Password) > 24 {
-		return c.JSON(http.StatusBadRequest, &dtos.ErrorDTO{ErrorCode: 2, Description: "Password must contain 8-24 characters."})
+	// The password hashing function can't accept a password longer than 72 bytes (72 = 4 (max bytes in a character) * 18)
+	if utf8.RuneCountInString(userDTO.Password) < 8 || utf8.RuneCountInString(userDTO.Password) > 18 {
+		return c.JSON(http.StatusBadRequest, &dtos.ErrorDTO{ErrorCode: 2, Description: "Password must contain 8-18 characters."})
 	}
 
 	hashedPassword := utils.HashPassword(userDTO.Password)
