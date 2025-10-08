@@ -29,6 +29,10 @@ func GenerateToken() string {
 
 func ValidateToken(c echo.Context, db *bun.DB, ctx context.Context) (*models.User, error) {
 	authHeader := c.Request().Header.Get("Authorization")
+	if len(authHeader) != 72 {
+		return &models.User{}, c.JSON(http.StatusUnauthorized, &dtos.ErrorDTO{ErrorCode: 9, Description: "Invalid token."})
+	}
+
 	headerToken := authHeader[7:]
 	user := new(models.User)
 

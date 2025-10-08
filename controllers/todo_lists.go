@@ -72,6 +72,8 @@ func GetUserTodoLists(c echo.Context) error {
 
 	user, err := utils.ValidateToken(c, db, ctx)
 	if err != nil {
+		fmt.Println("err:")
+		fmt.Println(err)
 		return err
 	}
 
